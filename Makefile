@@ -1,7 +1,7 @@
 CC=gcc
 SRC=src/main
 DEPS=src/headers
-SRS=$(SRC)/parser.c
+SRS=$(SRC)/lexer.c
 
 pilot: $(SRS)
 	$(CC) -o $@ $^ -I $(DEPS) -g

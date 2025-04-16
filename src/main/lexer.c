@@ -8,75 +8,75 @@ Copyright 2025 Petis God Naylis
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
 #define NULLT '\0'
 
-void lexandprint(char *fname) {
+int main(int argc, char *argv[]) {
 
-	FILE *srcf;
-	char **toks, **tdummy, *dummy;
-	int c, n, m, x, z, temp;
+	FILE *f;
+	char **toks, **tdummy, *keybuf, *dummy, *keywords[8] = {"int", "char", "float", "bool", "long", "double", "main", "void"}, keychars[5] = {'(', ')', '{', '}', ';'};
+	int t, m, b, n, c;
+	bool iskeychar;
 
-	n = x = 0;		//CHARACTER COUNTER; TOKEN COUNTER
-	m = z = 2;		//MALLOC COUNTER, TOKARRAY SIZE COUNTER		
-	if ((srcf = fopen(fname, "r")) == NULL) {
+	t = n = 0;
+	m = b = 2;
+	if ((f = fopen(argv[1], "r")) == NULL) {
 		perror("fopen err");
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
-	if ((toks = malloc(sizeof(char *) * z)) == NULL) {
+	if ((toks = malloc(sizeof(char *) * m)) == NULL || (keybuf = malloc(sizeof(char) * b)) == NULL) {
 		perror("malloc err");
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
-	for (int i = 0; i < z; i++)
-		if ((*(toks + i) = malloc(sizeof(char) * m)) == NULL) {
-			perror("malloc err");
-			return EXIT_FAILURE;	
-		}
-	while ((c = fgetc(srcf)) != EOF) {
-		if (x == z) {
-			z *= 2;
-			//printf("z is : %d\n", z);
-			if ((tdummy = realloc(toks, sizeof(char *) * z)) == NULL) {
+	while ((c = fgetc(f)) != EOF) {
+		if (t == m) {
+			m *= 2;
+			if ((tdummy = realloc(toks, sizeof(char *) * m)) == NULL) {
 				perror("realloc err");
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 			toks = tdummy;
-			for (int i = z / 2; i < z; i++ ) {
-				//printf("m is : %d\n", m);
-				if ((*(toks + i) = malloc(sizeof(char) * m)) == NULL) {
-					perror("malloc err");
-					return EXIT_FAILURE;	
+		}
+		if (n == b - 2) {
+			b *= 2;
+			if ((dummy = realloc(keybuf, sizeof(char) * b)) == NULL) {
+				perror("realloc err");
+				exit(EXIT_FAILURE);
+			}
+			keybuf = dummy;
+		}
+		iskeychar = false;
+		for (int i = 0; i < 5; i++)
+			if (c == keychars[i]) {
+				*keybuf = c;
+				*(keybuf + 1) = NULLT;
+				*(toks + (t++)) = strdup(keybuf);
+				n = 0;
+				iskeychar = true;
+			}
+		if (!iskeychar && c != ' ' && c != '\n' && c != '\t') {
+			*(keybuf + (n++)) = c;
+			*(keybuf + n) = NULLT;
+			for (int i = 0; i < 8; i++) {
+				if (strcmp(keybuf, keywords[i]) == 0) {
+					*(toks + (t++)) = strdup(keybuf);
+					n = 0;
 				}
 			}
 		}
-		if (n == m) {
-			m *= 2;
-			if ((dummy = realloc(*(toks + x), m)) == NULL) {
-				perror("realloc err");
-				return EXIT_FAILURE;
-			}
-			*(toks + x) = dummy;
-		}
-		if (c == ' ' || c == '\n') {
-			*(*(toks + x) + n) = NULLT;
-			x++;
-			n = 0;
-			m = 2;
-		} else {
-			/*printf("%d\t%d\t", x, n);
-			printf("\n");*/
-			*(*(toks + x) + n) = c;
-			n++;
-		}
 	}
-	if (fclose(srcf) == -1) {
+	free(keybuf);
+	if (fclose(f) == -1) {
 		perror("fclose err");
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
-	for (int i = 0; i <= x; i++) {
-		if (i != x)
-			printf("%s\n", *(toks + i));
+	for (int i = 0; i < t; i++) {
+		printf("%s\n", *(toks + i));
 		free(*(toks + i));
 	}
 	free(toks);
+	return 0;
+
 }
