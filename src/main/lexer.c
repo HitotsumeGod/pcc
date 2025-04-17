@@ -10,10 +10,11 @@ Copyright 2025 Petis God Naylis
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <pcc.h>
 
 #define NULLT '\0'
 
-int main(int argc, char *argv[]) {
+size_t lexit(char *fname, char ***lexbuf) {
 
 	FILE *f;
 	char **toks, **tdummy, *keybuf, *dummy, *keywords[8] = {"int", "char", "float", "bool", "long", "double", "main", "void"}, keychars[5] = {'(', ')', '{', '}', ';'};
@@ -22,7 +23,7 @@ int main(int argc, char *argv[]) {
 
 	t = n = 0;
 	m = b = 2;
-	if ((f = fopen(argv[1], "r")) == NULL) {
+	if ((f = fopen(fname, "r")) == NULL) {
 		perror("fopen err");
 		exit(EXIT_FAILURE);
 	}
@@ -72,11 +73,7 @@ int main(int argc, char *argv[]) {
 		perror("fclose err");
 		exit(EXIT_FAILURE);
 	}
-	for (int i = 0; i < t; i++) {
-		printf("%s\n", *(toks + i));
-		free(*(toks + i));
-	}
-	free(toks);
-	return 0;
+	*lexbuf = toks;
+	return t;
 
 }
