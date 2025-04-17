@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 		printf("%s\n", *(tokens + i));
 		free(*(tokens + i));
 	}
+	recursive_parse(tokens);
 	free(tokens);
 	return 0;
 

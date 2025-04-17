@@ -1,50 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <pcc.h>
 
-#define NEXT_TOK *(toks + (i++))
+#define DEPTH 4
+#define CHILDREN 2
+#define NEXT_TOK *(toks + (r++))
 
-void parse_as_ast(char **toks, size_t tok_size) {
-
-	char **toprint, **dummy;
-	int n, m;
-	bool in_main_function, in_function_args;
+TreeNode *recursive_parse(char **toks, TreeNode *p, int r) {
 	
-	n = 0
-	m = 2;
-	if ((toprint = malloc(sizeof(char *) * b)) == NULL) {
-		perror("malloc err");
-		exit(EXIT_FAILURE);
+	TreeNode *cnode;
+	char ret;
+	
+	if (is_digit((ret = *NEXT_TOK)))
+		if (strcmp("return", (char *) p -> val))
+			return mktnode(&ret, p, 0);	
 	}
-	in_main_function = in_function_args = false;
-	for (int i = 0; i < tok_size; i++) {
-		if (n > m) {
-			m *= 2;
-			if ((dummy = realloc(toprint, sizeof(char *) * m)) == NULL) {
-				perror("realloc err");
-				exit(EXIT_FAILURE);
-			}
-			toprint = dummy;
-		}
-		if (!in_main_function) {
-			while (strcmp("main", NEXT_TOK) == 1) 
-				*(toprint + (n++)) = strdup(NEXT_TOK);
-			*(toprint + (n++)) = strdup(NEXT_TOK);
-			if (strcmp("void", *(toks + (++i))) == 0)
-				if (strcmp(")", NEXT_TOK) == 0)
-					if (strcmp("{", NEXT_TOK) == 0)
-						in_main_function = true;
-		} else {
-			
-		}
-		if (!in_main_function) {
-			fprintf(stderr, "%s\n", "No main function defined.");
-			exit(EXIT_FAILURE);
-		}
-			
-	}
-
+		
 }
 
+bool is_digit(char d) {
+
+	for (int i = 48; i <= 57; i++)
+		if (d == i)
+			return true;
+	return false;
+
+}

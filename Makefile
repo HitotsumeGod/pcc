@@ -1,9 +1,10 @@
 CC=gcc
 SRC=src/main
-DEPS=src/headers
-SRS=$(SRC)/lexer.c $(SRC)/pilot.c
+DEPS=src/headers -I /usr/local/include
+LIBPATH=/usr/local/lib
+SRS=$(SRC)/lexer.c $(SRC)/consumer.c $(SRC)/pilot.c
 
 pilot: $(SRS)
-	$(CC) -o $@ $^ -I $(DEPS) -g
+	$(CC) -o $@ $^ -L $(LIBPATH) -lptrees -I $(DEPS) -g
 clean: pilot
 	rm -f $^

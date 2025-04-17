@@ -9,7 +9,6 @@ Copyright 2025 Petis God Naylis
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <pcc.h>
 
 #define NULLT '\0'
@@ -17,7 +16,7 @@ Copyright 2025 Petis God Naylis
 size_t lexit(char *fname, char ***lexbuf) {
 
 	FILE *f;
-	char **toks, **tdummy, *keybuf, *dummy, *keywords[8] = {"int", "char", "float", "bool", "long", "double", "main", "void"}, keychars[5] = {'(', ')', '{', '}', ';'};
+	char **toks, **tdummy, *keybuf, *dummy;
 	int t, m, b, n, c;
 	bool iskeychar;
 
@@ -50,7 +49,7 @@ size_t lexit(char *fname, char ***lexbuf) {
 		}
 		iskeychar = false;
 		for (int i = 0; i < 5; i++)
-			if (c == keychars[i]) {
+			if (c == pcc_keychars[i]) {
 				*keybuf = c;
 				*(keybuf + 1) = NULLT;
 				*(toks + (t++)) = strdup(keybuf);
@@ -61,7 +60,7 @@ size_t lexit(char *fname, char ***lexbuf) {
 			*(keybuf + (n++)) = c;
 			*(keybuf + n) = NULLT;
 			for (int i = 0; i < 8; i++) {
-				if (strcmp(keybuf, keywords[i]) == 0) {
+				if (strcmp(keybuf, pcc_keywords[i]) == 0) {
 					*(toks + (t++)) = strdup(keybuf);
 					n = 0;
 				}
