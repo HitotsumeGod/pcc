@@ -10,19 +10,24 @@ Copyright 2025 Petis God Naylis
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "pcc.h"
 
 #define NULLT '\0'
 
-int main(int argc, char *argv[]) {
+char numbers[10] = {'0','1','2','3','4','5','6','7','8','9'};
+char keychars[5] = {'(', ')', '{', '}', ';'};
+char *keywords[9] = {"int", "char", "float", "bool", "long", "double", "main", "void", "return"};
+
+char **lexer(char *fname) {
 
 	FILE *f;
-	char **toks, **tdummy, *keybuf, *dummy, *keywords[8] = {"int", "char", "float", "bool", "long", "double", "main", "void"}, keychars[5] = {'(', ')', '{', '}', ';'};
+	char **toks, **tdummy, *keybuf, *dummy;
 	int t, m, b, n, c;
 	bool iskeychar;
 
 	t = n = 0;
 	m = b = 2;
-	if ((f = fopen(argv[1], "r")) == NULL) {
+	if ((f = fopen(fname, "r")) == NULL) {
 		perror("fopen err");
 		exit(EXIT_FAILURE);
 	}
@@ -48,8 +53,16 @@ int main(int argc, char *argv[]) {
 			keybuf = dummy;
 		}
 		iskeychar = false;
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < sizeof keychars; i++)
 			if (c == keychars[i]) {
+				*keybuf = c;
+				*(keybuf + 1) = NULLT;
+				*(toks + (t++)) = strdup(keybuf);
+				n = 0;
+				iskeychar = true;
+			}
+		for (int i = 0; i < sizeof numbers; i++)
+			if (c == numbers[i]) {
 				*keybuf = c;
 				*(keybuf + 1) = NULLT;
 				*(toks + (t++)) = strdup(keybuf);
@@ -59,7 +72,7 @@ int main(int argc, char *argv[]) {
 		if (!iskeychar && c != ' ' && c != '\n' && c != '\t') {
 			*(keybuf + (n++)) = c;
 			*(keybuf + n) = NULLT;
-			for (int i = 0; i < 8; i++) {
+			for (int i = 0; i < 9; i++) {
 				if (strcmp(keybuf, keywords[i]) == 0) {
 					*(toks + (t++)) = strdup(keybuf);
 					n = 0;
@@ -72,11 +85,8 @@ int main(int argc, char *argv[]) {
 		perror("fclose err");
 		exit(EXIT_FAILURE);
 	}
-	for (int i = 0; i < t; i++) {
+	for (int i = 0; i < t; i++) 
 		printf("%s\n", *(toks + i));
-		free(*(toks + i));
-	}
-	free(toks);
-	return 0;
+	return toks;
 
 }
